@@ -1,0 +1,12 @@
+@use "./colors.scss" as *;
+
+body {
+    background-color: $neutral;
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+#id {
+    min-height: 100vh;
+    min-width: 100vw;
+}
