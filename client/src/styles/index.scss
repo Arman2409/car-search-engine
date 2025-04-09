@@ -10,3 +10,17 @@ body {
     min-height: 100vh;
     min-width: 100vw;
 }
+
+* {
+    box-sizing: border-box;
+}
+
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

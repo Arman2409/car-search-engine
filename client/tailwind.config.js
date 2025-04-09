@@ -7,10 +7,10 @@ export default {
         extend: {
             colors: {
                 // ! Any changes here require corresponding updates in ./src/styles/colors.scss
-                primary: "#3F7D58",
-                secondary: "#EFEFEF",
+                primary: "#3f5a7d",
+                secondary: "#9edef7",
                 accent: "#EC5228",
-                neutral: "#ffcba3",
+                neutral: "#7df74d",
             }
         },
     },
