@@ -1,0 +1,74 @@
+[
+      {
+        "id": 1,
+        "make": "Toyota",
+        "model": "Camry",
+        "year": 2018,
+        "body_type": "Sedan",
+        "feature_ids": [1, 2, 3]
+      },
+      {
+        "id": 2,
+        "make": "Honda",
+        "model": "Civic",
+        "year": 2020,
+        "body_type": "Hatchback",
+        "feature_ids": [2, 4]
+      },
+      {
+        "id": 3,
+        "make": "Ford",
+        "model": "Mustang",
+        "year": 2019,
+        "body_type": "Coupe"
+      },
+      {
+        "id": 4,
+        "make": "BMW",
+        "model": "X5",
+        "year": 2021,
+        "body_type": "SUV"
+      },
+      {
+        "id": 5,
+        "make": "Mercedes",
+        "model": "C-Class",
+        "year": 2017,
+        "body_type": "Sedan"
+      },
+      {
+        "id": 6,
+        "make": "Audi",
+        "model": "Q7",
+        "year": 2022,
+        "body_type": "SUV"
+      },
+      {
+        "id": 7,
+        "make": "Chevrolet",
+        "model": "Silverado",
+        "year": 2016,
+        "body_type": "Truck"
+      },
+      {
+        "id": 8,
+        "make": "Hyundai",
+        "model": "Tucson",
+        "year": 2023,
+        "body_type": "SUV"
+      },
+      {
+        "id": 9,
+        "make": "Volkswagen",
+        "model": "Golf",
+        "year": 2015,
+        "body_type": "Hatchback"
+      },
+      {
+        "id": 10,
+        "make": "Nissan",
+        "model": "Rogue",
+        "year": 2024,
+        "body_type": "SUV"
+      }
+    ]
