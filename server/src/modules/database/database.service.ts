@@ -10,11 +10,12 @@ export interface CarSearchCriteria {
     body_type?: string;
     page?: number;
     size?: number;
+    name?: string;
 }
 
 @Injectable()
 export class DatabaseService {
-    constructor(@Inject('DATABASE_POOL') private readonly pool: Pool,) {}
+    constructor(@Inject('DATABASE_POOL') private readonly pool: Pool,) { }
 
     async migrate() {
         try {
@@ -80,51 +81,46 @@ export class DatabaseService {
 
     async searchCars(criteria: CarSearchCriteria): Promise<{ data: any[]; total: number }> {
         const conditions: string[] = [];
-        const values: any[] = [];
+        const values: (string | number)[] = [];
         let paramCount = 1;
-
-        if (criteria.make) {
-            conditions.push(`make = $${paramCount}`);
-            values.push(criteria.make);
+    
+        // Handle the single combined search term
+        if (criteria.name) {
+            conditions.push(`(make || ' ' || model) ILIKE $${paramCount}`);
+            values.push(`%${criteria.name}%`);
             paramCount++;
         }
-
-        if (criteria.model) {
-            conditions.push(`model = $${paramCount}`);
-            values.push(criteria.model);
-            paramCount++;
-        }
-
+    
         if (criteria.year) {
             conditions.push(`year = $${paramCount}`);
             values.push(criteria.year);
             paramCount++;
         }
-
+    
         if (criteria.body_type) {
             conditions.push(`body_type = $${paramCount}`);
             values.push(criteria.body_type);
             paramCount++;
         }
-
+    
         let query = 'SELECT * FROM cars';
         if (conditions.length > 0) {
             query += ` WHERE ${conditions.join(' AND ')}`;
         }
-
+    
         // Pagination logic
         const page = criteria.page ? Math.max(1, Number(criteria.page)) : 1; // Ensure page is at least 1
         const size = criteria.size ? Math.max(1, Number(criteria.size)) : 10; // Default page size is 10
         const offset = (page - 1) * size;
-
+    
         const countQuery = query.replace('SELECT *', 'SELECT COUNT(*)');
         query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
         values.push(size, offset);
-
+    
         try {
             const result = await this.pool.query(query, values);
             const countResult = await this.pool.query(countQuery, values.slice(0, -2)); // Remove limit and offset values for count
-
+    
             return {
                 data: result.rows,
                 total: parseInt(countResult.rows[0].count, 10),

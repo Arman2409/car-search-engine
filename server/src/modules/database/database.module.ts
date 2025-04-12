@@ -6,7 +6,7 @@ import { Pool } from 'pg';
 import { DatabaseService } from './database.service';
 
 
-const databasePoolProvider = {
+export const databasePoolProvider = {
     provide: 'DATABASE_POOL', // A unique token to identify this provider
     useFactory: async () => {
         const pool = new Pool({
