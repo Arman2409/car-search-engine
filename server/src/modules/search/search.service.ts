@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool } from 'pg';
 
-import { CarSearchCriteria, DatabaseService } from '../database/database.service';
+import { DatabaseService } from '../database/database.service';
 import { SearchBodyDto } from './validation/search-body.dto';
 import { SearchQueryDto } from './validation/search-query.dto';
+import { CarSearchCriteria } from '../../types/modules/search';
 
 @Injectable()
 export class SearchService {
