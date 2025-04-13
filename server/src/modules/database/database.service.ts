@@ -1,29 +1,37 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Pool } from 'pg';
 
+import { LoggerService } from '../../tools/logger.service';
 import cars from './data/cars.json';
 import { getAllInsertionQuery, indexesCreationQuery, migrationQuery } from './data/queries';
 import { DATABASE_PROVIDER_KEY } from './database.provider';
 import type { CarSearchCriteria } from '../../types/modules/search';
-import type { Car } from '../../types/global';
+import type { Car, ErrorResult } from '../../types/global';
+
 
 @Injectable()
 export class DatabaseService {
-    constructor(@Inject(DATABASE_PROVIDER_KEY) private readonly pool: Pool) { }
+    constructor(
+        @Inject(DATABASE_PROVIDER_KEY) private readonly pool: Pool,
+        private readonly logger: LoggerService,
+) { }
 
-    async migrate() {
+    async migrate(): Promise<void | ErrorResult> {
         try {
             // Create the cars table if it doesn't exist
             await this.pool.query(migrationQuery);
 
-            console.log('Database migrated successfully');
+            this.logger.info('Database migrated successfully');
         } catch (error) {
+            this.logger.error("Error creating cars table:", error);
 
-            console.error('Error creating cars table:', error);
+            return {
+                error: 'Error creating cars table',
+            }
         }
     }
 
-    async seed() {
+    async seed(): Promise<void | ErrorResult> {
         try {
             // Clear existing data
             await this.pool.query('TRUNCATE TABLE cars RESTART IDENTITY CASCADE;');
@@ -43,24 +51,31 @@ export class DatabaseService {
                 carParams
             );
 
-            console.log(`Database seeded with ${cars.length} cars successfully`);
+            this.logger.info(`Database seeded with ${cars.length} cars successfully`);
         } catch (error) {
-            console.error('Error seeding database:', error);
+            this.logger.error("Error seeding database:", error);
+            return {
+                error: 'Error seeding database',
+            }
         }
     }
 
-    async index() {
+    async index():Promise<void | ErrorResult> {
         try {
             // Create indexes for faster querying
             await this.pool.query(indexesCreationQuery);
 
-            console.log('Indexes created successfully');
+            this.logger.info('Indexes created successfully');
         } catch (error) {
-            console.error('Error creating indexes:', error);
+            this.logger.error("Error creating indexes:", error.message);
+
+            return {
+                error: 'Error creating indexes',
+            }
         }
     }
 
-    async searchCars(criteria: CarSearchCriteria): Promise<{ data: Car[]; total: number }> {
+    async searchCars(criteria: CarSearchCriteria): Promise<{ data: Car[]; total: number }| ErrorResult> {
         const conditions: string[] = [];
         const values: (string | number)[] = [];
         let paramCount = 1;
@@ -107,16 +122,25 @@ export class DatabaseService {
                 total: parseInt(countResult.rows[0].count, 10),
             };
         } catch (error) {
-            console.error('Error searching cars with pagination:', error);
-            throw error;
+            this.logger.error("Error searching cars with pagination:", error);
+            return {
+                error: 'Error searching cars with pagination:',
+            }
         }
     }
 
-    async getUniqueModelsOrMakes(type: 'make' | 'model'): Promise<string[]> {
-        const query = `SELECT DISTINCT ${type} FROM cars`;
-        const result = await this.pool.query(query);
-
-        return result.rows.map(row => row[type]); // Extract the `model` values
+    async getUniqueModelsOrMakes(type: 'make' | 'model'): Promise<string[]|ErrorResult> {
+        try {
+            const query = `SELECT DISTINCT ${type} FROM cars`;
+            const result = await this.pool.query(query);
+    
+            return result.rows.map(row => row[type]); // Extract the `model` values
+        } catch (error) {
+            this.logger.error("Error fetching unique makes or models:", error);
+            return {
+                error: "Error fetching unique makes or models",
+            }
+        }
     }
 
 }

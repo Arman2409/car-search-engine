@@ -1,6 +1,8 @@
 
 import { Pool } from 'pg';
 
+import { LoggerService } from '../../tools/logger.service';
+
 export const DATABASE_PROVIDER_KEY = 'DATABASE_POOL';
 
 const requiredEnvMap = {
@@ -10,6 +12,9 @@ const requiredEnvMap = {
 };
 
 const dbConfig: Record<keyof typeof requiredEnvMap, string> = {} as typeof requiredEnvMap;
+
+const logger = new LoggerService();
+
 
 export const DatabaseProvider = {
     provide: DATABASE_PROVIDER_KEY, // A unique token to identify this provider
@@ -33,10 +38,10 @@ export const DatabaseProvider = {
 
         try {
             await pool.connect();
-            console.log('Database connected!');
+            logger.info('Database connected!');
             return pool;
         } catch (err) {
-            console.error('Error connecting to database pool:', err);
+            logger.error(`Error connecting to database pool: ${err}`);
             throw err;
         }
     },

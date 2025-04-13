@@ -7,6 +7,14 @@ export class SearchBodyDto {
   name: string;
 
   @IsOptional()
+  @IsString()
+  make: string;
+
+  @IsOptional()
+  @IsString()
+  model: string;
+
+  @IsOptional()
   @IsNumber()
   @IsInt()
   @Min(1900) // Assuming cars weren't really a thing before 1900

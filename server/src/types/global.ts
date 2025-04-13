@@ -6,3 +6,7 @@ export interface Car {
     body_type: string;
     name?: string;
 }
+
+export interface ErrorResult {
+    error: string;
+}

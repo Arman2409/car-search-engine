@@ -1,20 +1,21 @@
 import { Inject, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 
+import { LoggerService } from '../../tools/logger.service';
 import { DatabaseService } from './database.service';
 import { DatabaseProvider, DATABASE_PROVIDER_KEY } from './database.provider';
 
 @Module({
     imports: [ConfigModule],
-    providers: [DatabaseService, DatabaseProvider],
+    providers: [DatabaseService, DatabaseProvider, LoggerService],
     exports: [DatabaseService, DATABASE_PROVIDER_KEY],
 })
 export class DatabaseModule implements OnModuleInit {
     constructor(
         @Inject(DATABASE_PROVIDER_KEY) private readonly pool: Pool,
         private service: DatabaseService,
+        private readonly logger: LoggerService,
     ) {}
 
     async onModuleInit() {
@@ -23,19 +24,18 @@ export class DatabaseModule implements OnModuleInit {
             this.service.seed(),
             this.service.index(),
         ]).catch((error) => {
-            console.error('Error initializing database module:', error);
+            this.logger.error('Error initializing database module:', error);
         }).then(() => {
-            console.log('Database initialized successfully');
+            this.logger.info('Database initialized successfully');
         }).finally(() => {
             this.pool.on('error', (err) => {
-                console.error('Unexpected error on idle client', err);
+                this.logger.error('Unexpected error on idle client', err);
             });
         });
     }
 
-
     async onModuleDestroy() {
         await this.pool.end();
-        console.log('Disconnected from PostgreSQL');
+        this.logger.info('Disconnected from PostgreSQL');
     }
 }
