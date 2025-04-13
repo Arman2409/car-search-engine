@@ -17,4 +17,4 @@ export const indexesCreationQuery = `
                 CREATE INDEX IF NOT EXISTS idx_cars_model ON cars (model);
                 CREATE INDEX IF NOT EXISTS idx_cars_year ON cars (year);
                 CREATE INDEX IF NOT EXISTS idx_cars_body_type ON cars (body_type);
-                `
+                `;
