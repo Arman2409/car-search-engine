@@ -1,11 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowDropDown } from "@mui/icons-material";
 import { Checkbox, MenuItem, Select, TextField } from "@mui/material";
 
 import styles from "./styles/Filters.module.scss";
+import { Request } from "../../api/request";
+import type { SelectFilter } from "../../types/components/filters";
 
 const Filters = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState<boolean>(false);
+    const [makes, setMakes] = useState<string[]>([]);
+    const [models, setModels] = useState<string[]>([]);
+    const [bodyTypes, setBodyTypes] = useState<string[]>([])
+
+    const handleOpen = async (
+        type: SelectFilter,
+    ) => {
+        const cachedData = sessionStorage.getItem(type);
+
+        let result: string[] = [];
+
+        if (cachedData) {
+            result = JSON.parse(cachedData);
+        } else {
+            result = await Request.getInstance().getFilterData(type);
+            sessionStorage.setItem(type, JSON.stringify(result));
+        }
+
+        if (typeof result === "object") {
+            if (type === "models") {
+                setModels(result);
+            } else if(type === "makes") {
+                setMakes(result);
+            } else {
+                setBodyTypes(result);
+            }
+        }
+    }
 
     return (
         <>
@@ -13,7 +43,7 @@ const Filters = () => {
                 className="flex cursor-pointer"
                 onClick={() => setOpen(!open)}
             >
-                <h2 >
+                <h2>
                     Filters
                 </h2>
                 <ArrowDropDown
@@ -58,23 +88,46 @@ const Filters = () => {
                 <div className="w-[225px] flex flex-col gap-2 p-2">
                     <label htmlFor="mark">Mark</label>
                     <Select
-                        id="mark"
+                        onOpen={() => handleOpen("makes")}
                         className="w-[150px]"
                     >
-                        <MenuItem value="BMW">BMW</MenuItem>
-                        <MenuItem value="Mercedes">Mercedes</MenuItem>
-                        <MenuItem value="Audi">Audi</MenuItem>
+                        {makes.map((make) => (
+                            <MenuItem
+                                key={make}
+                                value={make}>
+                                {make}
+                            </MenuItem>
+                        ))}
                     </Select>
                 </div>
                 <div className="w-[225px] flex flex-col gap-2 p-2">
                     <label htmlFor="mark">Model</label>
                     <Select
-                        id="mark"
+                        onOpen={() => handleOpen("models")}
                         className="w-[150px]"
                     >
-                        <MenuItem value="BMW">BMW</MenuItem>
-                        <MenuItem value="Mercedes">Mercedes</MenuItem>
-                        <MenuItem value="Audi">Audi</MenuItem>
+                        {models.map((model) => (
+                            <MenuItem
+                                key={model}
+                                value={model}>
+                                {model}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </div>
+                <div className="w-[225px] flex flex-col gap-2 p-2">
+                    <label htmlFor="mark">Body type</label>
+                    <Select
+                        onOpen={() => handleOpen("bodyTypes")}
+                        className="w-[150px]"
+                    >
+                        {bodyTypes.map((bodyType) => (
+                            <MenuItem
+                                key={bodyType}
+                                value={bodyType}>
+                                {bodyType}
+                            </MenuItem>
+                        ))}
                     </Select>
                 </div>
                 <div className="w-[400px] flex flex-col gap-2 p-2">
@@ -94,18 +147,6 @@ const Filters = () => {
                             className="w-[150px]"
                         />
                     </div>
-                </div>
-                <div className="w-[250px] flex flex-col gap-2 p-2">
-                    <label htmlFor="age">Year</label>
-                    <Select
-                        id="mark"
-                        className="w-[150px]"
-                    >
-                        <MenuItem value="">...</MenuItem>
-                        <MenuItem value="1999">1999</MenuItem>
-                        <MenuItem value="2000">2000</MenuItem>
-                        <MenuItem value="2001">2001</MenuItem>
-                    </Select>
                 </div>
             </div>
         </>
