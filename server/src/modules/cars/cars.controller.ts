@@ -8,11 +8,16 @@ export class CarsController {
 
     @Get("/makes")
     async getMakes() {
-        return this.service.getMakesOrModels("make");
+        return this.service.getFilterData("makes");
     }
 
     @Get("/models")
     async getModels() {
-        return this.service.getMakesOrModels("model");
+        return this.service.getFilterData("models");
+    }
+
+    @Get("/bodyTypes")
+    async getBodyTypes() {
+        return this.service.getFilterData("bodyTypes");
     }
 }

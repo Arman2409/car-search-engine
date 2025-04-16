@@ -7,6 +7,7 @@ import { getAllInsertionQuery, indexesCreationQuery, migrationQuery } from './da
 import { DATABASE_PROVIDER_KEY } from './database.provider';
 import type { CarSearchCriteria } from '../../types/modules/search';
 import type { Car, ErrorResult } from '../../types/global';
+import type { SelectFilter } from '../../types/modules/cars';
 
 
 @Injectable()
@@ -38,14 +39,16 @@ export class DatabaseService {
 
             // Bulk insert cars
             const carValues = cars.map((_, i) => {
-                const base = i * 5; // Each car has 5 params: id, make, model, year, body_type
-                return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5})`;
+                const base = i * 4; // Each car has 5 params: id, make, model, body_type
+                return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4})`;
             }).join(', ');
 
-            const carParams = cars.flatMap(({ id, make, model, year, body_type }: Car) => {
-                return [id, make, model, year, body_type]
+            const carParams = cars.flatMap(({ id, make, model, body_type }: Car) => {
+                return [id, make, model, body_type]
             });
 
+            console.log(carValues);
+            
             await this.pool.query(
                 getAllInsertionQuery(carValues),
                 carParams
@@ -53,7 +56,7 @@ export class DatabaseService {
 
             this.logger.info(`Database seeded with ${cars.length} cars successfully`);
         } catch (error) {
-            this.logger.error("Error seeding database:", error);
+            this.logger.error("Error seeding database", error);
             return {
                 error: 'Error seeding database',
             }
@@ -84,12 +87,6 @@ export class DatabaseService {
         if (criteria.name) {
             conditions.push(`CONCAT(make, ' ', model) ILIKE $${paramCount}`);
             values.push(`%${criteria.name}%`);
-            paramCount++;
-        }
-
-        if (criteria.year) {
-            conditions.push(`year = $${paramCount}`);
-            values.push(criteria.year);
             paramCount++;
         }
 
@@ -129,8 +126,14 @@ export class DatabaseService {
         }
     }
 
-    async getUniqueModelsOrMakes(type: 'make' | 'model'): Promise<string[]|ErrorResult> {
+    async getUniqueFilterData(dataType: SelectFilter): Promise<string[]|ErrorResult> {
         try {
+            let type = dataType.slice(0, -1); // Remove the trailing "s" to match the database column names
+
+            if(type === "bodyType") {
+                type = "body_type";
+            }
+
             const query = `SELECT DISTINCT ${type} FROM cars`;
             const result = await this.pool.query(query);
     

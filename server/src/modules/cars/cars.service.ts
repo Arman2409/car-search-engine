@@ -4,6 +4,7 @@ import { isErrorResult } from '../../utils/type-guards';
 import { LoggerService } from '../../tools/logger.service';
 import { DatabaseService } from '../database/database.service';
 import { CacheService } from '../cache/cache.service';
+import type { SelectFilter } from '../../types/modules/cars';
 
 @Injectable()
 export class CarsService {
@@ -14,7 +15,7 @@ export class CarsService {
     ) { }
 
     @HttpCode(HttpStatus.OK)
-    async getMakesOrModels(type: "model" | "make") {
+    async getFilterData(type: SelectFilter) {
 
         const cachedResult = await this.cache.get(type)
             .then(result => result)
@@ -26,7 +27,7 @@ export class CarsService {
             return JSON.parse(cachedResult);
         }
 
-        const result = await this.database.getUniqueModelsOrMakes(type);
+        const result = await this.database.getUniqueFilterData(type);
 
         if (isErrorResult(result)) {
             throw new HttpException(

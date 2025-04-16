@@ -28,11 +28,11 @@ export class LoggerService {
     error(
         message: string,
         error?: Error
-    ) {
+    ) {        
         this.logger.error(message);
         appendFileSync(
             ERROR_LOGS_PATH,
-            `${new Date().toISOString()} - ${message} \n \n ${error}`,
+            `${new Date().toISOString()} - ${message}: ${String(error)}`,
         );
     }
 }
