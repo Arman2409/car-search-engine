@@ -1,10 +1,10 @@
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Checkbox, MenuItem, Select, TextField } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
 
 import styles from "./styles/Filters.module.scss";
 import { Request } from "../../api/request";
-import { FiltersContext } from "../../state/context";
+import { FiltersContext } from "../../state/filters";
 import type { SelectFilter } from "../../types/components/filters";
 
 const Filters = () => {
@@ -43,12 +43,15 @@ const Filters = () => {
 
     }
 
-    const selectFilterValue = (name: SelectFilter, value: string) => useCallback(() => {
+    const selectFilterValue = (
+        name: SelectFilter,
+        value: string
+    ) => {
         dispatch({
             for: name,
             payload: value
         })
-    }, [dispatch])
+    }
 
     return (
         <>

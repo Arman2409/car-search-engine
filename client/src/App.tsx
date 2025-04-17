@@ -1,21 +1,25 @@
-import { useEffect, useReducer } from "react"
-import Filters from "./components/Filters/Filters"
-import Footer from "./components/Footer/Footer"
-import Header from "./components/Header/Header"
-import Searchbar from "./components/Searchbar/Searchbar"
-import { FiltersContext, type State } from "./state/context"
-import type { SelectFilter } from "./types/components/filters"
+import { useReducer, useState } from "react";
 
-// export enum ActionType = "SET_MAKES" | "SET_MODELS" | "SET_BODY_TYPES";
+import Filters from "./components/Filters/Filters";
+import Footer from "./components/Footer/Footer";
+import Header from "./components/Header/Header";
+import Searchbar from "./components/Searchbar/Searchbar";
+import { FiltersContext, type State } from "./state/filters";
+import { CarsContext } from "./state/cars";
+import type { SelectFilter } from "./types/components/filters";
+import type { Car } from "./types/global";
 
 export interface Action {
   payload: string;
   for: SelectFilter;
 }
 
-const filtersReducer = (state: State, action: Action) => {
-  console.log("received for dispatch");
-  
+const filtersReducer = (
+  state: State,
+  action: Action) => {
+
+  console.log("dispatching", action);
+
   switch (action.for) {
     case "makes":
       return { ...state, make: action.payload };
@@ -29,21 +33,23 @@ const filtersReducer = (state: State, action: Action) => {
 }
 
 const App = () => {
+  const [cars, setCars] = useState<Car[]>([]);
   const [filters, dispatchFilters] = useReducer(filtersReducer, {} as State);
 
-  useEffect(() => {
-    console.log({ filters });
-    
-  }, [filters])
   return (
     <FiltersContext.Provider value={{
       state: filters,
       dispatch: dispatchFilters
     }}>
-      <Header />
-      <Searchbar />
-      <Filters />
-      <Footer />
+      <CarsContext.Provider value={{
+        state: { cars },
+        dispatch: setCars
+      }}>
+        <Header />
+        <Searchbar />
+        <Filters />
+        <Footer />
+      </CarsContext.Provider>
     </FiltersContext.Provider>
   )
 }

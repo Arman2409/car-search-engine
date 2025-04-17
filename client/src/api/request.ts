@@ -30,4 +30,18 @@ export class Request {
                 return []
             })
     }
+
+    async search(page: number, limit: number, filters: Record<string, string>) {
+        const searchUrl = new URLSearchParams();
+        searchUrl.append('page', page.toString());
+        searchUrl.append('limit', limit.toString());
+
+        return await this.axiosInstance.post(`search?${searchUrl.toString()}`, filters)
+            .then(({data}) => data)
+            .catch(err => {
+                console.error("Failed to get random quote", err);
+                return []
+            })
+
+    }
 }
