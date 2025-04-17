@@ -13,7 +13,6 @@ export class SearchService {
         private readonly database: DatabaseService
     ) { }
 
-    @HttpCode(HttpStatus.OK)
     async search(
         searchBody: SearchBodyDto,
         searchRequestQuery: SearchQueryDto
@@ -25,6 +24,8 @@ export class SearchService {
 
         const result = await this.database.searchCars(criteria);
 
+        console.log({result});
+        
         if (isErrorResult(result)) {
             throw new HttpException(
                 'Internal Server Error',

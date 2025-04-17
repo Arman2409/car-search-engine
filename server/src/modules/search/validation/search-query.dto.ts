@@ -10,6 +10,6 @@ export class SearchQueryDto {
   @IsInt()
   @Min(1)
   @Type(() => Number) // Transforms string query param to number
-  size: number;
+  limit: number;
 
 }

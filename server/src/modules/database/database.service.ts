@@ -15,7 +15,7 @@ export class DatabaseService {
     constructor(
         @Inject(DATABASE_PROVIDER_KEY) private readonly pool: Pool,
         private readonly logger: LoggerService,
-) { }
+    ) { }
 
     async migrate(): Promise<void | ErrorResult> {
         try {
@@ -48,7 +48,7 @@ export class DatabaseService {
             });
 
             console.log(carValues);
-            
+
             await this.pool.query(
                 getAllInsertionQuery(carValues),
                 carParams
@@ -63,7 +63,7 @@ export class DatabaseService {
         }
     }
 
-    async index():Promise<void | ErrorResult> {
+    async index(): Promise<void | ErrorResult> {
         try {
             // Create indexes for faster querying
             await this.pool.query(indexesCreationQuery);
@@ -78,7 +78,10 @@ export class DatabaseService {
         }
     }
 
-    async searchCars(criteria: CarSearchCriteria): Promise<{ data: Car[]; total: number }| ErrorResult> {
+    async searchCars(
+        criteria: CarSearchCriteria
+    ): Promise<{ data: Car[]; total: number } | ErrorResult> {
+
         const conditions: string[] = [];
         const values: (string | number)[] = [];
         let paramCount = 1;
@@ -103,7 +106,7 @@ export class DatabaseService {
 
         // Pagination logic
         const page = criteria.page ? Math.max(1, Number(criteria.page)) : 1; // Ensure page is at least 1
-        const size = criteria.size ? Math.max(1, Number(criteria.size)) : 10; // Default page size is 10
+        const size = criteria.limit ? Math.max(1, Number(criteria.limit)) : 10; // Default page size is 10
         const offset = (page - 1) * size;
 
         const countQuery = query.replace('SELECT *', 'SELECT COUNT(*)');
@@ -126,17 +129,17 @@ export class DatabaseService {
         }
     }
 
-    async getUniqueFilterData(dataType: SelectFilter): Promise<string[]|ErrorResult> {
+    async getUniqueFilterData(dataType: SelectFilter): Promise<string[] | ErrorResult> {
         try {
             let type = dataType.slice(0, -1); // Remove the trailing "s" to match the database column names
 
-            if(type === "bodyType") {
+            if (type === "bodyType") {
                 type = "body_type";
             }
 
             const query = `SELECT DISTINCT ${type} FROM cars`;
             const result = await this.pool.query(query);
-    
+
             return result.rows.map(row => row[type]); // Extract the `model` values
         } catch (error) {
             this.logger.error("Error fetching unique makes or models:", error);
