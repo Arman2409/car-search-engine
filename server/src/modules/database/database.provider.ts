@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 
 import { LoggerService } from '../../tools/logger.service';
 
+
 export const DATABASE_PROVIDER_KEY = 'DATABASE_POOL';
 
 const requiredEnvMap = {
@@ -14,7 +15,6 @@ const requiredEnvMap = {
 const dbConfig: Record<keyof typeof requiredEnvMap, string> = {} as typeof requiredEnvMap;
 
 const logger = new LoggerService();
-
 
 export const DatabaseProvider = {
     provide: DATABASE_PROVIDER_KEY, // A unique token to identify this provider

@@ -2,15 +2,15 @@ import { ActionDispatch, createContext } from "react";
 
 import type { Action } from "../App";
 
-export interface State {
+export interface FiltersState {
     make: string;
     model: string;
     bodyType: string;
 }
 
 interface IFiltersContext {
-    state: State,
-    dispatch: ActionDispatch<[action: Action]>;
+    filters: FiltersState,
+    dispatchFilters: ActionDispatch<[action: Action]>;
 }
 
 export const FiltersContext = createContext<IFiltersContext>({} as IFiltersContext);

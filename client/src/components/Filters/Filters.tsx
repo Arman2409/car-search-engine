@@ -12,7 +12,7 @@ const Filters = () => {
     const [makes, setMakes] = useState<string[]>([]);
     const [models, setModels] = useState<string[]>([]);
     const [bodyTypes, setBodyTypes] = useState<string[]>([]);
-    const { dispatch } = useContext(FiltersContext);
+    const { dispatchFilters } = useContext(FiltersContext);
 
     const handleOpen = async (
         type: SelectFilter,
@@ -47,7 +47,7 @@ const Filters = () => {
         name: SelectFilter,
         value: string
     ) => {
-        dispatch({
+        dispatchFilters({
             for: name,
             payload: value
         })

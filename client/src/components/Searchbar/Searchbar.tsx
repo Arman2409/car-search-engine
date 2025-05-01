@@ -3,31 +3,35 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Search, SearchIconWrapper, StyledInputBase } from './components/SearchInput';
 import { Button } from '@mui/material';
 import { Request } from '../../api/request';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FiltersContext } from '../../state/filters';
+import { CarsContext } from '../../state/cars';
 
 const Searchbar = () => {
     const [searchText, setSearchText] = useState<string>("");
-    const { state } = useContext(FiltersContext)
+    const { filters } = useContext(FiltersContext)
+    const { dispatchCars } = useContext(CarsContext)
 
     const search = async () => {
-        console.log({state});
-        
-        const result = await Request.getInstance().search(
+        await Request.getInstance().search(
             1,
             10,
             {
-                ...state,
+                ...filters,
                 name: searchText
             }
         ).then(({ data }) => {
+            dispatchCars(data);
+
             console.log('Search result:', data);
         }).catch(err => {
             console.error('Search error:', err);
-        }
-        );
-
+        });
     }
+
+    useEffect(() => {
+        search();
+    }, [searchText]);
 
     return (
         <div className="flex items-center justify-center w-full p-4 ">

@@ -2,6 +2,7 @@ import Redis from 'ioredis';
 
 import { LoggerService } from '../../tools/logger.service';
 
+
 export const CACHE_CLIENT_KEY = 'REDIS_CLIENT'; // A unique token to identify this provider
 
 const requiredEnvMap = {

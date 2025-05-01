@@ -1,11 +1,12 @@
 import { useReducer, useState } from "react";
 
+import { FiltersContext, type FiltersState } from "./state/filters";
+import { CarsContext } from "./state/cars";
 import Filters from "./components/Filters/Filters";
 import Footer from "./components/Footer/Footer";
 import Header from "./components/Header/Header";
 import Searchbar from "./components/Searchbar/Searchbar";
-import { FiltersContext, type State } from "./state/filters";
-import { CarsContext } from "./state/cars";
+import Cars from "./components/Cars/Cars";
 import type { SelectFilter } from "./types/components/filters";
 import type { Car } from "./types/global";
 
@@ -15,10 +16,8 @@ export interface Action {
 }
 
 const filtersReducer = (
-  state: State,
+  state: FiltersState,
   action: Action) => {
-
-  console.log("dispatching", action);
 
   switch (action.for) {
     case "makes":
@@ -34,20 +33,21 @@ const filtersReducer = (
 
 const App = () => {
   const [cars, setCars] = useState<Car[]>([]);
-  const [filters, dispatchFilters] = useReducer(filtersReducer, {} as State);
+  const [filters, dispatchFilters] = useReducer(filtersReducer, {} as FiltersState);
 
   return (
     <FiltersContext.Provider value={{
-      state: filters,
-      dispatch: dispatchFilters
+      filters: filters,
+      dispatchFilters: dispatchFilters
     }}>
       <CarsContext.Provider value={{
-        state: { cars },
-        dispatch: setCars
+        cars: cars,
+        dispatchCars: setCars
       }}>
         <Header />
         <Searchbar />
         <Filters />
+        <Cars />
         <Footer />
       </CarsContext.Provider>
     </FiltersContext.Provider>

@@ -6,6 +6,7 @@ import { LoggerService } from '../../tools/logger.service';
 import { DatabaseService } from './database.service';
 import { DatabaseProvider, DATABASE_PROVIDER_KEY } from './database.provider';
 
+
 @Module({
     imports: [ConfigModule],
     providers: [DatabaseService, DatabaseProvider, LoggerService],
